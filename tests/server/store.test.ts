@@ -92,3 +92,77 @@ test("updateTask errors on unknown agent or task", () => {
   store.registerAgent({ agentId: "a", name: "A", tasks: ["x"] });
   assert.throws(() => store.updateTask({ agentId: "a", taskId: "nope", status: "completed" }), /task/i);
 });
+
+test("addTasks appends with fresh sequence IDs", () => {
+  const { agent } = store.registerAgent({ agentId: "a", name: "A", tasks: ["x"] });
+  const res = store.addTasks({ agentId: "a", tasks: ["y", "z"] });
+  assert.deepEqual(res.taskIds, ["a-t1", "a-t2"]);
+  assert.deepEqual(agent.tasks.map((t) => t.id), ["a-t0", "a-t1", "a-t2"]);
+  assert.equal(agent.nextTaskSeq, 3);
+});
+
+test("addTasks afterTaskId inserts in place", () => {
+  const { agent } = store.registerAgent({ agentId: "a", name: "A", tasks: ["x", "y"] });
+  store.addTasks({ agentId: "a", tasks: ["mid"], afterTaskId: "a-t0" });
+  assert.deepEqual(agent.tasks.map((t) => t.label), ["x", "mid", "y"]);
+});
+
+test("removeTask refuses in_progress tasks", () => {
+  const { agent } = store.registerAgent({ agentId: "a", name: "A", tasks: ["x"] });
+  store.updateTask({ agentId: "a", taskId: "a-t0", status: "in_progress" });
+  assert.throws(() => store.removeTask({ agentId: "a", taskId: "a-t0" }), /in progress/i);
+  assert.equal(agent.tasks.length, 1);
+});
+
+test("removeTask drops a pending task", () => {
+  const { agent } = store.registerAgent({ agentId: "a", name: "A", tasks: ["x", "y"] });
+  store.removeTask({ agentId: "a", taskId: "a-t0" });
+  assert.deepEqual(agent.tasks.map((t) => t.id), ["a-t1"]);
+});
+
+test("reorderTasks validates IDs match exactly", () => {
+  const { agent } = store.registerAgent({ agentId: "a", name: "A", tasks: ["x", "y", "z"] });
+  store.reorderTasks({ agentId: "a", taskIds: ["a-t2", "a-t0", "a-t1"] });
+  assert.deepEqual(agent.tasks.map((t) => t.id), ["a-t2", "a-t0", "a-t1"]);
+  assert.throws(
+    () => store.reorderTasks({ agentId: "a", taskIds: ["a-t0", "a-t1"] }),
+    /exactly/i,
+  );
+});
+
+test("renameTask updates label only", () => {
+  const { agent } = store.registerAgent({ agentId: "a", name: "A", tasks: ["x"] });
+  store.renameTask({ agentId: "a", taskId: "a-t0", label: "renamed" });
+  assert.equal(agent.tasks[0]!.label, "renamed");
+});
+
+test("removeAgent removes agent and returns true, idempotent for unknown", () => {
+  store.registerAgent({ agentId: "a", name: "A", tasks: [] });
+  assert.equal(store.removeAgent({ agentId: "a" }), true);
+  assert.equal(store.getState().agents.a, undefined);
+  assert.equal(store.removeAgent({ agentId: "a" }), false);
+});
+
+test("clearAll empties the board", () => {
+  store.registerAgent({ agentId: "a", name: "A", tasks: [] });
+  store.registerAgent({ agentId: "b", name: "B", tasks: [] });
+  store.clearAll();
+  assert.deepEqual(store.getState().agents, {});
+});
+
+test("applyRestartRecovery flips connection + reverts in_progress to pending", () => {
+  store.registerAgent({ agentId: "a", name: "A", tasks: ["x", "y"] });
+  store.updateTask({ agentId: "a", taskId: "a-t0", status: "in_progress", note: "existing" });
+  store.applyRestartRecovery();
+  const s = store.getState();
+  assert.equal(s.agents.a!.connectionStatus, "disconnected");
+  assert.equal(s.agents.a!.tasks[0]!.status, "pending");
+  assert.equal(s.agents.a!.tasks[0]!.note, "existing", "preserves existing note");
+});
+
+test("applyRestartRecovery sets note when none existed", () => {
+  store.registerAgent({ agentId: "a", name: "A", tasks: ["x"] });
+  store.updateTask({ agentId: "a", taskId: "a-t0", status: "in_progress" });
+  store.applyRestartRecovery();
+  assert.equal(store.getState().agents.a!.tasks[0]!.note, "server restarted");
+});
