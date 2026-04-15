@@ -18,9 +18,23 @@ export interface RegisterAgentResult {
   reRegistered: boolean;
 }
 
+export interface UpdateTaskInput {
+  agentId: string;
+  taskId: string;
+  status: TaskStatus;
+  note?: string;
+}
+
+export interface UpdateTaskResult {
+  agent: Agent;
+  task: Task;
+  supersededTaskIds: string[]; // other tasks auto-reverted from in_progress
+}
+
 export interface Store {
   getState(): BoardState;
   registerAgent(input: RegisterAgentInput): RegisterAgentResult;
+  updateTask(input: UpdateTaskInput): UpdateTaskResult;
   markAllDisconnected(): void;
   now(): string; // exposed for tests/mocks (swapped later if needed)
 }
@@ -80,9 +94,39 @@ export function createStore(initial?: BoardState): Store {
     }
   }
 
+  function updateTask(input: UpdateTaskInput): UpdateTaskResult {
+    const agent = state.agents[input.agentId];
+    if (!agent) throw new Error(`Agent "${input.agentId}" not found.`);
+    const task = agent.tasks.find((t) => t.id === input.taskId);
+    if (!task) throw new Error(`Task "${input.taskId}" not found on agent "${input.agentId}".`);
+
+    const superseded: string[] = [];
+    if (input.status === "in_progress") {
+      for (const t of agent.tasks) {
+        if (t.id !== task.id && t.status === "in_progress") {
+          t.status = "pending";
+          t.updatedAt = now();
+          superseded.push(t.id);
+        }
+      }
+    }
+
+    task.status = input.status;
+    if (Object.prototype.hasOwnProperty.call(input, "note")) {
+      // caller explicitly passed note (possibly "")
+      task.note = input.note === "" ? undefined : input.note;
+    }
+    task.updatedAt = now();
+    agent.connectionStatus = "connected";
+    agent.lastActivityAt = task.updatedAt;
+
+    return { agent, task, supersededTaskIds: superseded };
+  }
+
   return {
     getState: () => state,
     registerAgent,
+    updateTask,
     markAllDisconnected,
     now,
   };
