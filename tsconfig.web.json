@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "ESNext",
+      "moduleResolution": "bundler",
+      "lib": ["ES2022", "DOM", "DOM.Iterable"],
+      "jsx": "react-jsx",
+      "strict": true,
+      "noUncheckedIndexedAccess": true,
+      "skipLibCheck": true,
+      "allowImportingTsExtensions": true,
+      "noEmit": true
+    },
+    "include": ["src/web/**/*", "src/shared/**/*", "tests/web/**/*"]
+  }
