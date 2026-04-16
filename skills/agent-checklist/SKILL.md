@@ -43,9 +43,11 @@ The plugin's `.mcp.json` and `SessionStart` hook handle MCP registration and ser
 
 The MCP client will surface the failure. Run in Bash:
 ```bash
-agent-checklist ensure-running
+# Find the installed plugin binary and restart
+_ac_bin="$(ls ~/.claude/plugins/cache/agent-checklist/agent-checklist/*/dist/server/index.js 2>/dev/null | sort -V | tail -1)"
+[ -n "$_ac_bin" ] && node "$_ac_bin" ensure-running
 ```
-Then retry the tool call. If it still fails, tell the user.
+Then retry the tool call. If it still fails, tell the user to restart their Claude Code session (the SessionStart hook will re-launch the server).
 
 ## Do not
 

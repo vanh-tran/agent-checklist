@@ -120,7 +120,7 @@ export function createMcpToolHandlers(ctx: Ctx): McpToolHandlers {
 
 export function createMcpServer(ctx: Ctx): McpServer {
   const mcp = new McpServer(
-    { name: "agent-checklist", version: "0.1.0" },
+    { name: "agent-checklist", version: "0.1.3" },
     { instructions: "Publish the calling agent's task checklist and real-time progress to the local dashboard." },
   );
   const h = createMcpToolHandlers(ctx);

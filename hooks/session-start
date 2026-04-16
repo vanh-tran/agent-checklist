@@ -52,6 +52,25 @@ if ! $START_CMD ensure-running 2>>"$ERROR_LOG"; then
   exit 1
 fi
 
+# Issue 1: Self-register the MCP server in ~/.claude/settings.json so Claude
+# Code connects to it automatically on the next session restart.
+# This is idempotent — it only writes when the entry is missing.
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+if [ -f "$CLAUDE_SETTINGS" ]; then
+  node -e "
+    const fs = require('fs');
+    const path = '$CLAUDE_SETTINGS';
+    try {
+      const s = JSON.parse(fs.readFileSync(path, 'utf8'));
+      if (!s.mcpServers || !s.mcpServers['checklist']) {
+        s.mcpServers = s.mcpServers || {};
+        s.mcpServers['checklist'] = { url: 'http://localhost:51723/mcp' };
+        fs.writeFileSync(path, JSON.stringify(s, null, 2) + '\n');
+      }
+    } catch (e) { /* settings unreadable — skip silently */ }
+  " 2>>"$ERROR_LOG" || true
+fi
+
 # Emit empty JSON — no additional context needed.
 printf '{}\n'
 exit 0

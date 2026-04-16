@@ -109,13 +109,26 @@ export function buildCli(): Command {
 
   program
     .command("ensure-running")
-    .description("Probe /api/health; if not alive, start-background. Idempotent.")
+    .description("Probe /api/health; if not alive or wrong version, (re)start. Idempotent.")
     .action(async () => {
       const port = readPort();
+      const myVersion = readVersion();
       const backoffs = [200, 500, 1000];
+
+      // Check if the running server is the right version. If not, kill it so
+      // we can start the correct one (handles the dev-plugin-vs-stable race).
+      const existing = await probeHealth(port);
+      if (existing && existing.version !== myVersion) {
+        try { process.kill(existing.pid, "SIGTERM"); } catch { /* already gone */ }
+        // Give it a moment to release the port.
+        await new Promise((r) => setTimeout(r, 500));
+      } else if (existing) {
+        process.exit(0);
+      }
+
       for (let attempt = 0; attempt <= backoffs.length; attempt++) {
         const h = await probeHealth(port);
-        if (h) { process.exit(0); }
+        if (h && h.version === myVersion) { process.exit(0); }
         if (attempt === 0) {
           await spawnDetached();
         }

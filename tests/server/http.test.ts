@@ -15,7 +15,7 @@ beforeEach(async () => {
   const ready = createReadyFlag();
   app = Fastify();
   await registerHttpRoutes(app, {
-    store, broadcaster, ready, version: "0.1.0-test", startedAt,
+    store, broadcaster, ready, version: "0.1.3-test", startedAt,
   });
   await app.ready();
 });
@@ -27,7 +27,7 @@ test("GET /api/health returns service metadata immediately", async () => {
   assert.equal(res.statusCode, 200);
   const body = res.json();
   assert.equal(body.service, "agent-checklist");
-  assert.equal(body.version, "0.1.0-test");
+  assert.equal(body.version, "0.1.3-test");
   assert.equal(body.pid, process.pid);
   assert.equal(body.startedAt, startedAt);
 });
