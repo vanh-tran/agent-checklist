@@ -2945,7 +2945,7 @@ git commit -m "test(server): end-to-end MCP integration (initialize + register +
 **Files:**
 - Create: `scripts/build.sh`
 
-- [ ] **Step 1: Create `scripts/build.sh`**
+- [x] **Step 1: Create `scripts/build.sh`**
 
 ```bash
 #!/usr/bin/env bash
@@ -2959,7 +2959,7 @@ chmod +x dist/server/index.js || true
 echo "build complete: dist/"
 ```
 
-- [ ] **Step 2: Make executable**
+- [x] **Step 2: Make executable**
 
 Run: `chmod +x scripts/build.sh`
 
@@ -2985,7 +2985,7 @@ kill %1
 ```
 Expected: `200` for the dashboard HTML; health returns JSON.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/build.sh
