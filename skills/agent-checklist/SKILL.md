@@ -9,15 +9,15 @@ Use this skill whenever you plan to complete a non-trivial, multi-step task. You
 
 ## Prerequisites
 
-The plugin's `.mcp.json` and `SessionStart` hook handle MCP registration and server auto-start automatically. If the MCP tools are not available or `$CLAUDE_SESSION_ID` is empty, tell the user to reinstall the plugin and restart their session.
+The plugin's `.mcp.json` and `SessionStart` hook handle MCP registration and server auto-start automatically. If the MCP tools are not available, tell the user to reinstall the plugin and restart their session.
 
 ## When you start a task
 
 1. **Get your agent ID.** Run this in Bash:
    ```bash
-   cat /tmp/claude-session-id
+   cat /tmp/agent-checklist-sessions/$PPID
    ```
-   Use the UUID you see as your `agentId` in every tool call below. If the file is missing or empty, tell the user the `SessionStart` hook is not installed and stop.
+   Use the UUID you see as your `agentId` in every tool call below. If the file is missing or empty, tell the user the `SessionStart` hook is not capturing the session ID from stdin — they should reinstall the plugin and restart their session.
 
 2. **Register yourself** with the planned task list:
    ```
@@ -49,6 +49,6 @@ Then retry the tool call. If it still fails, tell the user.
 
 ## Do not
 
-- Invent your own agent ID — always read it from `/tmp/claude-session-id`.
+- Invent your own agent ID — always read it from `/tmp/agent-checklist-sessions/$PPID`.
 - Call `POST /api/board/clear` — that's a human-only control.
 - Register the same agent more than once with a different `name` — pick one name and keep it.

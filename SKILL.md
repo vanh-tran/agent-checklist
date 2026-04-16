@@ -14,17 +14,17 @@ Use this skill whenever you plan to complete a non-trivial, multi-step task. You
    ```json
    { "mcpServers": { "checklist": { "url": "http://localhost:51723/mcp" } } }
    ```
-3. Installed the `SessionStart` hook that captures `$CLAUDE_SESSION_ID` and runs `agent-checklist ensure-running`.
+3. Installed the `SessionStart` hook that captures the session ID from stdin and runs `agent-checklist ensure-running`.
 
-If any of these is missing, the MCP tools will not be available or `$CLAUDE_SESSION_ID` will be empty. Tell the user and stop.
+If any of these is missing, the MCP tools will not be available. Tell the user and stop.
 
 ## When you start a task
 
 1. **Get your agent ID.** Run this in Bash:
    ```bash
-   echo "$CLAUDE_SESSION_ID"
+   cat /tmp/agent-checklist-sessions/$PPID
    ```
-   Use the UUID you see as your `agentId` in every tool call below. If it prints an empty line, tell the user the `SessionStart` hook is missing and stop.
+   Use the UUID you see as your `agentId` in every tool call below. If the file is missing or empty, tell the user the `SessionStart` hook is not capturing the session ID — they should reinstall the plugin and restart their session.
 
 2. **Register yourself** with the planned task list:
    ```
@@ -56,6 +56,6 @@ Then retry the tool call. If it still fails, tell the user.
 
 ## Do not
 
-- Invent your own agent ID — always use `$CLAUDE_SESSION_ID`.
+- Invent your own agent ID — always read it from `/tmp/agent-checklist-sessions/$PPID`.
 - Call `POST /api/board/clear` — that's a human-only control.
 - Register the same agent more than once with a different `name` — pick one name and keep it.

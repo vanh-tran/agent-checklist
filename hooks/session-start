@@ -6,23 +6,50 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+ERROR_LOG="/tmp/agent-checklist-error.log"
+
+# Claude passes hook data via stdin as JSON (not env vars). Read it first.
+# Write session_id keyed by $PPID (Claude's PID) so concurrent sessions in the
+# same project don't overwrite each other — each session has a unique parent PID.
+SESSION_JSON="$(cat)"
+SESSION_ID="$(echo "$SESSION_JSON" | node -e \
+  "const d=JSON.parse(require('fs').readFileSync(0,'utf8'));process.stdout.write(d.session_id||d.sessionId||'')" \
+  2>/dev/null || true)"
+if [ -n "$SESSION_ID" ]; then
+  mkdir -p /tmp/agent-checklist-sessions
+  echo "$SESSION_ID" > "/tmp/agent-checklist-sessions/$PPID"
+fi
 
 # Build from source if dist/ doesn't exist yet (first use after plugin install).
 if [ ! -f "${PLUGIN_ROOT}/dist/server/index.js" ]; then
   cd "${PLUGIN_ROOT}"
   if command -v pnpm &>/dev/null; then
-    pnpm install --frozen-lockfile 2>/dev/null && pnpm build 2>/dev/null
+    pnpm install --frozen-lockfile 2>>"$ERROR_LOG" && pnpm build 2>>"$ERROR_LOG"
   elif command -v npm &>/dev/null; then
-    npm ci 2>/dev/null && npm run build 2>/dev/null
+    npm ci 2>>"$ERROR_LOG" && npm run build 2>>"$ERROR_LOG"
   fi
 fi
 
-# Start the server if it's not already running.
-# Prefer global install, fall back to plugin's own dist/.
-if command -v agent-checklist &>/dev/null; then
-  agent-checklist ensure-running 2>/dev/null || true
-elif [ -x "${PLUGIN_ROOT}/dist/server/index.js" ]; then
-  node "${PLUGIN_ROOT}/dist/server/index.js" ensure-running 2>/dev/null || true
+# Issue 2: Prefer the plugin-local binary (always present after install),
+# fall back to a global install, then the bare node invocation.
+PLUGIN_BIN="${PLUGIN_ROOT}/node_modules/.bin/agent-checklist"
+
+if [ -x "$PLUGIN_BIN" ]; then
+  START_CMD="$PLUGIN_BIN"
+elif command -v agent-checklist &>/dev/null; then
+  START_CMD="agent-checklist"
+elif [ -f "${PLUGIN_ROOT}/dist/server/index.js" ]; then
+  START_CMD="node ${PLUGIN_ROOT}/dist/server/index.js"
+else
+  printf '{"error":"agent-checklist: dist/server/index.js not found. Run: pnpm build inside %s"}\n' "$PLUGIN_ROOT"
+  exit 1
+fi
+
+# Issue 3: Surface failures as a JSON error instead of silently swallowing them.
+if ! $START_CMD ensure-running 2>>"$ERROR_LOG"; then
+  printf '{"error":"agent-checklist server failed to start. Check %s for details."}\n' "$ERROR_LOG"
+  cat "$ERROR_LOG" >&2
+  exit 1
 fi
 
 # Emit empty JSON — no additional context needed.

@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { SCHEMA_VERSION, type BoardState } from "../shared/types";
+import { SCHEMA_VERSION, type BoardState } from "../shared/types.js";
 
 export interface PersistenceOptions {
     filePath: string;

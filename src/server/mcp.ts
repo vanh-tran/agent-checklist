@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { Agent, Task, WsMessage } from "../shared/types.js";
 import type { Store } from "./store.js";
-import { Broadcaster } from "./broadcast";
+import { Broadcaster } from "./broadcast.js";
 
 interface Ctx {
   store: Store
