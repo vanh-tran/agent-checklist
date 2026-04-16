@@ -25,7 +25,7 @@ Register the marketplace:
 Install the plugin:
 
 ```bash
-/plugin install agent-checklist@agent-checklist-dev
+/plugin install agent-checklist@agent-checklist
 ```
 
 The first session start after install will automatically run `pnpm install && pnpm build` to compile the server and web UI.
@@ -79,7 +79,7 @@ You'll get a notification when an update is applied and may be asked to run `/re
 
 ```bash
 /plugin marketplace update vanh-tran/agent-checklist
-/plugin update agent-checklist@agent-checklist-dev
+/plugin update agent-checklist@agent-checklist
 ```
 
 Then restart Claude Code or run `/reload-plugins`.
