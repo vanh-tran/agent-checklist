@@ -1,15 +1,24 @@
 #!/usr/bin/env bash
 # SessionStart hook for agent-checklist plugin
-# Ensures the server is running so the MCP endpoint is available.
+# Builds on first use (if needed), then ensures the server is running.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Try to start the server if it's not already running.
-# First check if `agent-checklist` is on PATH (global install).
-# Otherwise, fall back to running from the plugin's dist/ directly.
+# Build from source if dist/ doesn't exist yet (first use after plugin install).
+if [ ! -f "${PLUGIN_ROOT}/dist/server/index.js" ]; then
+  cd "${PLUGIN_ROOT}"
+  if command -v pnpm &>/dev/null; then
+    pnpm install --frozen-lockfile 2>/dev/null && pnpm build 2>/dev/null
+  elif command -v npm &>/dev/null; then
+    npm ci 2>/dev/null && npm run build 2>/dev/null
+  fi
+fi
+
+# Start the server if it's not already running.
+# Prefer global install, fall back to plugin's own dist/.
 if command -v agent-checklist &>/dev/null; then
   agent-checklist ensure-running 2>/dev/null || true
 elif [ -x "${PLUGIN_ROOT}/dist/server/index.js" ]; then
@@ -17,13 +26,5 @@ elif [ -x "${PLUGIN_ROOT}/dist/server/index.js" ]; then
 fi
 
 # Emit empty JSON — no additional context needed.
-# The SKILL.md and .mcp.json handle everything else.
-if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
-  printf '{}\n'
-elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
-  printf '{}\n'
-else
-  printf '{}\n'
-fi
-
+printf '{}\n'
 exit 0
