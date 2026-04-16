@@ -1,47 +1,83 @@
-import { useEffect, useState } from "react";
-import type { BoardState, WsMessage } from "../../../shared/types";
+import { useEffect, useRef, useState } from "react";
+import type { BoardState, WsMessage, Agent, Task } from "@shared/types";
 
-const WS_URL = `ws://${window.location.host}/ws`;
+export interface UseBoardResult {
+  board: BoardState;
+  connected: boolean;
+}
 
-export function useBoard() {
-  const [board, setBoard] = useState<BoardState>({ agents: {} });
+const EMPTY_BOARD: BoardState = { schemaVersion: 1, agents: {} };
+
+export function useBoard(): UseBoardResult {
+  const [board, setBoard] = useState<BoardState>(EMPTY_BOARD);
   const [connected, setConnected] = useState(false);
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-useEffect(() => {
-    const ws = new WebSocket(WS_URL);
+  useEffect(() => {
+    let cancelled = false;
 
-    ws.onopen = () => setConnected(true);
-    ws.onclose = () => setConnected(false);
+    async function hydrate() {
+      try {
+        const r = await fetch("/api/state");
+        if (r.ok && !cancelled) {
+          const s = (await r.json()) as BoardState;
+          setBoard(s);
+        }
+      } catch { /* will retry via WS fallback */ }
+    }
 
-    ws.onmessage = (e) => {
-      const msg: WsMessage = JSON.parse(e.data);
-
-      if (msg.type === "state") {
-        setBoard(msg.payload);
-      } else if (msg.type === "agent_updated") {
-        setBoard((prev) => ({
-          agents: { ...prev.agents, [msg.payload.id]: msg.payload },
-        }));
-      } else if (msg.type === "task_updated") {
-        setBoard((prev) => {
+    function applyMessage(msg: WsMessage) {
+      setBoard((prev) => {
+        if (msg.type === "state") return msg.payload;
+        if (msg.type === "agent_updated") {
+          return { ...prev, agents: { ...prev.agents, [msg.payload.id]: msg.payload } };
+        }
+        if (msg.type === "agent_removed") {
+          const { [msg.payload.agentId]: _, ...rest } = prev.agents;
+          return { ...prev, agents: rest };
+        }
+        if (msg.type === "task_updated") {
           const agent = prev.agents[msg.payload.agentId];
           if (!agent) return prev;
-          return {
-            agents: {
-              ...prev.agents,
-              [msg.payload.agentId]: {
-                ...agent,
-                tasks: agent.tasks.map((t) =>
-                  t.id === msg.payload.task.id ? msg.payload.task : t
-                ),
-              },
-            },
-          };
-        });
-      }
-};
+          const tasks: Task[] = agent.tasks.map((t) =>
+            t.id === msg.payload.task.id ? msg.payload.task : t,
+          );
+          const nextAgent: Agent = { ...agent, tasks, lastActivityAt: msg.payload.task.updatedAt, connectionStatus: "connected" };
+          return { ...prev, agents: { ...prev.agents, [msg.payload.agentId]: nextAgent } };
+        }
+        return prev;
+      });
+    }
 
- return () => ws.close();
+    function connect() {
+      const url = `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`;
+      const ws = new WebSocket(url);
+
+      ws.onopen = () => {
+        setConnected(true);
+        void hydrate();
+      };
+      ws.onclose = () => {
+        setConnected(false);
+        reconnectTimer.current = setTimeout(connect, 1000);
+      };
+      ws.onmessage = (e) => {
+        try {
+          applyMessage(JSON.parse(String(e.data)) as WsMessage);
+        } catch {
+          /* drop malformed */
+        }
+      };
+      return () => ws.close();
+    }
+
+    const dispose = connect();
+
+    return () => {
+      cancelled = true;
+      if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      dispose?.();
+    };
   }, []);
 
   return { board, connected };

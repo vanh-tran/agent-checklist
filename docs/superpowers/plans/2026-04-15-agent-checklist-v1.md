@@ -2271,7 +2271,7 @@ git commit -m "feat(web): Vite + Tailwind entry with placeholder App"
 - Modify: `src/web/src/hooks/useBoard.ts`
 - Create: `tests/web/useBoard.test.ts`
 
-- [ ] **Step 1: Replace `src/web/src/hooks/useBoard.ts`**
+- [x] **Step 1: Replace `src/web/src/hooks/useBoard.ts`**
 
 ```ts
 import { useEffect, useRef, useState } from "react";
@@ -2361,7 +2361,7 @@ export function useBoard(): UseBoardResult {
 }
 ```
 
-- [ ] **Step 2: Write `tests/web/useBoard.test.ts`**
+- [x] **Step 2: Write `tests/web/useBoard.test.ts`**
 
 ```ts
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -2430,12 +2430,12 @@ describe("useBoard", () => {
 });
 ```
 
-- [ ] **Step 3: Run UI tests**
+- [x] **Step 3: Run UI tests**
 
 Run: `pnpm test:web`
 Expected: both tests pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/web/src/hooks/useBoard.ts tests/web/useBoard.test.ts
