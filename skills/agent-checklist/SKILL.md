@@ -15,9 +15,9 @@ The plugin's `.mcp.json` and `SessionStart` hook handle MCP registration and ser
 
 1. **Get your agent ID.** Run this in Bash:
    ```bash
-   echo "$CLAUDE_SESSION_ID"
+   cat /tmp/claude-session-id
    ```
-   Use the UUID you see as your `agentId` in every tool call below. If it prints an empty line, tell the user the `SessionStart` hook is missing and stop.
+   Use the UUID you see as your `agentId` in every tool call below. If the file is missing or empty, tell the user the `SessionStart` hook is not installed and stop.
 
 2. **Register yourself** with the planned task list:
    ```
@@ -49,6 +49,6 @@ Then retry the tool call. If it still fails, tell the user.
 
 ## Do not
 
-- Invent your own agent ID — always use `$CLAUDE_SESSION_ID`.
+- Invent your own agent ID — always read it from `/tmp/claude-session-id`.
 - Call `POST /api/board/clear` — that's a human-only control.
 - Register the same agent more than once with a different `name` — pick one name and keep it.

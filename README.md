@@ -60,6 +60,30 @@ pnpm add -g agent-checklist
 agent-checklist start
 ```
 
+## Automatic Updates
+
+This plugin is distributed through a third-party marketplace (`vanh-tran/agent-checklist`). Auto-update is disabled by default for all third-party marketplaces.
+
+### Enable Automatic Updates (Recommended)
+
+Once enabled, Claude Code will automatically download the latest version every time you start it.
+
+1. In Claude Code, type `/plugin` and press Enter
+2. Switch to the **Marketplaces** tab
+3. Find and select **`vanh-tran/agent-checklist`**
+4. Choose **Enable auto-update**
+
+You'll get a notification when an update is applied and may be asked to run `/reload-plugins`.
+
+### Manual Update
+
+```bash
+/plugin marketplace update vanh-tran/agent-checklist
+/plugin update agent-checklist@agent-checklist-dev
+```
+
+Then restart Claude Code or run `/reload-plugins`.
+
 ## What's Inside
 
 ### MCP Tools

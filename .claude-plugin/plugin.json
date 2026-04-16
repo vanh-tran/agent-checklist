@@ -1,7 +1,7 @@
 {
   "name": "agent-checklist",
   "description": "Local dashboard + MCP server that shows coding agents' real-time task checklists and progress.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "vanhtran18",
     "email": "vanhtran18.soict@gmail.com"
