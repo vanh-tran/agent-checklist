@@ -1,0 +1,18 @@
+{
+  "name": "agent-checklist",
+  "description": "Local dashboard + MCP server that shows coding agents' real-time task checklists and progress.",
+  "version": "0.1.0",
+  "author": {
+    "name": "vanhtran18",
+    "email": "vanhtran18.soict@gmail.com"
+  },
+  "repository": "https://github.com/vanhtran18/agent-checklist",
+  "license": "MIT",
+  "keywords": [
+    "checklist",
+    "dashboard",
+    "mcp",
+    "agents",
+    "progress-tracking"
+  ]
+}

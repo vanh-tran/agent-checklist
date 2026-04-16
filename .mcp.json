@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "checklist": {
+      "url": "http://localhost:51723/mcp"
+    }
+  }
+}

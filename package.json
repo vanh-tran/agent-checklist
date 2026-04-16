@@ -8,6 +8,10 @@
   },
   "files": [
     "dist",
+    ".claude-plugin",
+    ".mcp.json",
+    "hooks",
+    "skills",
     "SKILL.md",
     "README.md"
   ],

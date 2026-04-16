@@ -1,8 +1,10 @@
 node_modules/
-dist/
 .worktrees/
 *.log
 .DS_Store
 .env
 .env.local
 .superpowers/
+
+# Superpowers planning docs (internal, not part of the plugin)
+docs/superpowers/
