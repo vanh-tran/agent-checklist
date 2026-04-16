@@ -1,31 +1,47 @@
 {
   "name": "agent-checklist",
   "version": "0.1.0",
-  "private": true,
+  "description": "Local dashboard + MCP server that shows coding agents' real-time checklists.",
   "type": "module",
+  "bin": {
+    "agent-checklist": "dist/server/index.js"
+  },
+  "files": ["dist", "SKILL.md", "README.md"],
   "scripts": {
-    "dev": "tsx watch src/server/index.ts",
-    "build:web": "vite build",
-    "preview": "vite preview"
+    "dev:server": "tsx watch src/server/index.ts start",
+    "dev:web": "vite",
+    "build": "bash scripts/build.sh",
+    "test:server": "node --import tsx --test tests/server/**/*.test.ts",
+    "test:web": "vitest run",
+    "test": "pnpm test:server && pnpm test:web",
+    "lint:types": "tsc --noEmit"
   },
   "dependencies": {
     "@fastify/static": "^9.1.0",
     "@fastify/websocket": "^11.2.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "dotenv": "^17.4.2",
+    "commander": "^12.1.0",
     "fastify": "^5.8.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.10.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "jsdom": "^25.0.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "vite": "^8.0.8"
+    "vite": "^8.0.8",
+    "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=20.11.0"
   }
 }

@@ -74,7 +74,7 @@ agent-checklist/
 **Files:**
 - Modify: `package.json`
 
-- [ ] **Step 1: Replace package.json contents**
+- [x] **Step 1: Replace package.json contents**
 
 Replace `package.json` with:
 
@@ -155,7 +155,7 @@ git commit -m "chore: update package.json for v1 implementation (deps, scripts, 
 - Modify: `vite.config.ts`
 - Create: `vitest.config.ts`
 
-- [ ] **Step 1: Update `tsconfig.json` (server compile target)**
+- [x] **Step 1: Update `tsconfig.json` (server compile target)**
 
 ```json
 {
@@ -178,7 +178,7 @@ git commit -m "chore: update package.json for v1 implementation (deps, scripts, 
 }
 ```
 
-- [ ] **Step 2: Create `tsconfig.web.json` (IDE only; Vite uses its own esbuild)**
+- [x] **Step 2: Create `tsconfig.web.json` (IDE only; Vite uses its own esbuild)**
 
 ```json
 {
@@ -198,7 +198,7 @@ git commit -m "chore: update package.json for v1 implementation (deps, scripts, 
 }
 ```
 
-- [ ] **Step 3: Replace `vite.config.ts`**
+- [x] **Step 3: Replace `vite.config.ts`**
 
 ```ts
 import { defineConfig } from "vite";
@@ -228,7 +228,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 4: Create `vitest.config.ts`**
+- [x] **Step 4: Create `vitest.config.ts`**
 
 ```ts
 import { defineConfig } from "vitest/config";
@@ -250,12 +250,12 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 5: Verify types compile**
+- [x] **Step 5: Verify types compile**
 
 Run: `pnpm lint:types`
 Expected: no errors (there is no server code yet, but the compiler must accept the config).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tsconfig.json tsconfig.web.json vite.config.ts vitest.config.ts
@@ -270,7 +270,7 @@ git commit -m "chore: configure typescript + vite + vitest for dual server/web b
 - Modify: `src/shared/types.ts`
 - Create: `src/shared/port.ts`
 
-- [ ] **Step 1: Replace `src/shared/types.ts`**
+- [x] **Step 1: Replace `src/shared/types.ts`**
 
 ```ts
 export const SCHEMA_VERSION = 1 as const;
@@ -317,7 +317,7 @@ export interface HealthResponse {
 }
 ```
 
-- [ ] **Step 2: Create `src/shared/port.ts`**
+- [x] **Step 2: Create `src/shared/port.ts`**
 
 ```ts
 export const DEFAULT_PORT = 51723;
@@ -335,12 +335,12 @@ export function readPort(): number {
 }
 ```
 
-- [ ] **Step 3: Verify types compile**
+- [x] **Step 3: Verify types compile**
 
 Run: `pnpm lint:types`
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/shared
@@ -355,7 +355,7 @@ git commit -m "feat(shared): define Board/Agent/Task types with schema version +
 - Create: `src/server/persistence.ts`
 - Create: `tests/server/persistence.test.ts`
 
-- [ ] **Step 1: Write the failing test — `tests/server/persistence.test.ts`**
+- [x] **Step 1: Write the failing test — `tests/server/persistence.test.ts`**
 
 ```ts
 import { test } from "node:test";
@@ -453,12 +453,12 @@ function fakeAgent(id: string) {
 }
 ```
 
-- [ ] **Step 2: Run — verify tests fail**
+- [x] **Step 2: Run — verify tests fail**
 
 Run: `pnpm test:server`
 Expected: FAIL; module not found `src/server/persistence.ts`.
 
-- [ ] **Step 3: Implement `src/server/persistence.ts`**
+- [x] **Step 3: Implement `src/server/persistence.ts`**
 
 ```ts
 import { promises as fs } from "node:fs";
@@ -561,12 +561,12 @@ function migrate(input: unknown): BoardState {
 }
 ```
 
-- [ ] **Step 4: Run tests — all pass**
+- [x] **Step 4: Run tests — all pass**
 
 Run: `pnpm test:server`
 Expected: 5 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/server/persistence.ts tests/server/persistence.test.ts
@@ -581,7 +581,7 @@ git commit -m "feat(server): persistence layer with debounced writes + schema mi
 - Modify: `src/server/store.ts`
 - Create: `tests/server/store.test.ts`
 
-- [ ] **Step 1: Write failing tests — `tests/server/store.test.ts`**
+- [x] **Step 1: Write failing tests — `tests/server/store.test.ts`**
 
 ```ts
 import { test, beforeEach } from "node:test";
@@ -636,12 +636,12 @@ test("registerAgent with same id but different name errors", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests — verify they fail**
+- [x] **Step 2: Run tests — verify they fail**
 
 Run: `pnpm test:server --test-name-pattern=registerAgent`
 Expected: FAIL; `createStore` not exported or store module missing.
 
-- [ ] **Step 3: Replace `src/server/store.ts` with initial implementation**
+- [x] **Step 3: Replace `src/server/store.ts` with initial implementation**
 
 ```ts
 import {
@@ -735,12 +735,12 @@ export function createStore(initial?: BoardState): Store {
 }
 ```
 
-- [ ] **Step 4: Run tests — pass**
+- [x] **Step 4: Run tests — pass**
 
 Run: `pnpm test:server --test-name-pattern=registerAgent`
 Expected: 3 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/server/store.ts tests/server/store.test.ts
@@ -755,7 +755,7 @@ git commit -m "feat(server): store.registerAgent with re-register behavior"
 - Modify: `src/server/store.ts`
 - Modify: `tests/server/store.test.ts`
 
-- [ ] **Step 1: Append failing tests**
+- [x] **Step 1: Append failing tests**
 
 Append to `tests/server/store.test.ts`:
 
@@ -803,12 +803,12 @@ test("updateTask errors on unknown agent or task", () => {
 });
 ```
 
-- [ ] **Step 2: Run — verify new tests fail**
+- [x] **Step 2: Run — verify new tests fail**
 
 Run: `pnpm test:server --test-name-pattern=updateTask`
 Expected: FAIL.
 
-- [ ] **Step 3: Extend `src/server/store.ts`**
+- [x] **Step 3: Extend `src/server/store.ts`**
 
 Add these exports and logic to the store module. Update the `Store` interface and `createStore` return value:
 
@@ -869,12 +869,12 @@ function updateTask(input: UpdateTaskInput): UpdateTaskResult {
 
 Don't forget to include `updateTask` in the returned object from `createStore`.
 
-- [ ] **Step 4: Run tests — pass**
+- [x] **Step 4: Run tests — pass**
 
 Run: `pnpm test:server`
 Expected: all previous tests still pass + 4 new ones pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/server/store.ts tests/server/store.test.ts
@@ -889,7 +889,7 @@ git commit -m "feat(server): store.updateTask with auto-revert of concurrent in_
 - Modify: `src/server/store.ts`
 - Modify: `tests/server/store.test.ts`
 
-- [ ] **Step 1: Append failing tests**
+- [x] **Step 1: Append failing tests**
 
 ```ts
 test("addTasks appends with fresh sequence IDs", () => {
@@ -967,12 +967,12 @@ test("applyRestartRecovery sets note when none existed", () => {
 });
 ```
 
-- [ ] **Step 2: Run — verify they fail**
+- [x] **Step 2: Run — verify they fail**
 
 Run: `pnpm test:server`
 Expected: FAIL on new test names (methods not defined).
 
-- [ ] **Step 3: Extend `src/server/store.ts`** with the remaining primitives.
+- [x] **Step 3: Extend `src/server/store.ts`** with the remaining primitives.
 
 Add these interfaces and methods to `Store` and `createStore`:
 
@@ -1102,12 +1102,12 @@ function applyRestartRecovery(): void {
 
 Remember to include all these in the returned object from `createStore`.
 
-- [ ] **Step 4: Run tests — all pass**
+- [x] **Step 4: Run tests — all pass**
 
 Run: `pnpm test:server`
 Expected: all store tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/server/store.ts tests/server/store.test.ts
@@ -1122,7 +1122,7 @@ git commit -m "feat(server): store add/remove/reorder/rename + restart recovery"
 - Modify: `src/server/broadcast.ts`
 - Create: `src/server/ready.ts`
 
-- [ ] **Step 1: Replace `src/server/broadcast.ts`**
+- [x] **Step 1: Replace `src/server/broadcast.ts`**
 
 ```ts
 import type { WsMessage } from "../shared/types.js";
@@ -1167,7 +1167,7 @@ export function createBroadcaster(): Broadcaster {
 }
 ```
 
-- [ ] **Step 2: Create `src/server/ready.ts`**
+- [x] **Step 2: Create `src/server/ready.ts`**
 
 ```ts
 export interface ReadyFlag {
@@ -1186,12 +1186,12 @@ export function createReadyFlag(): ReadyFlag {
 }
 ```
 
-- [ ] **Step 3: Verify types compile**
+- [x] **Step 3: Verify types compile**
 
 Run: `pnpm lint:types`
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/server/broadcast.ts src/server/ready.ts
@@ -1206,7 +1206,7 @@ git commit -m "feat(server): broadcaster module + ready flag"
 - Modify: `src/server/mcp.ts`
 - Create: `tests/server/mcp.test.ts`
 
-- [ ] **Step 1: Write failing tests — `tests/server/mcp.test.ts`**
+- [x] **Step 1: Write failing tests — `tests/server/mcp.test.ts`**
 
 ```ts
 import { test, beforeEach } from "node:test";
@@ -1272,12 +1272,12 @@ test("get_board returns the current state as JSON text", async () => {
 });
 ```
 
-- [ ] **Step 2: Run — verify they fail**
+- [x] **Step 2: Run — verify they fail**
 
 Run: `pnpm test:server --test-name-pattern=register_agent|update_task|remove_task|get_board`
 Expected: FAIL; `createMcpToolHandlers` not exported.
 
-- [ ] **Step 3: Replace `src/server/mcp.ts`**
+- [x] **Step 3: Replace `src/server/mcp.ts`**
 
 ```ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -1472,12 +1472,12 @@ export function createMcpServer(ctx: Ctx): McpServer {
 }
 ```
 
-- [ ] **Step 4: Run tests — pass**
+- [x] **Step 4: Run tests — pass**
 
 Run: `pnpm test:server`
 Expected: all tests pass including new MCP tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/server/mcp.ts tests/server/mcp.test.ts
@@ -1680,7 +1680,7 @@ git commit -m "feat(server): HTTP routes — /api/health, /api/ready, /api/state
 **Files:**
 - Create: `src/server/server.ts`
 
-- [ ] **Step 1: Create `src/server/server.ts`**
+- [x] **Step 1: Create `src/server/server.ts`**
 
 ```ts
 import Fastify, { type FastifyInstance } from "fastify";
@@ -1777,12 +1777,12 @@ export async function startServer(opts: StartOpts): Promise<ServerHandle> {
 }
 ```
 
-- [ ] **Step 2: Compile**
+- [x] **Step 2: Compile**
 
 Run: `pnpm lint:types`
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/server/server.ts
