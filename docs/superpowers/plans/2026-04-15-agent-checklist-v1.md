@@ -2452,7 +2452,7 @@ git commit -m "feat(web): useBoard hook — WS + /api/state hydration with recon
 - Create: `src/web/src/components/AgentCard.tsx`
 - Create: `tests/web/AgentCard.test.tsx`
 
-- [ ] **Step 1: Create `src/web/src/components/TaskItem.tsx`**
+- [x] **Step 1: Create `src/web/src/components/TaskItem.tsx`**
 
 ```tsx
 import type { Task } from "@shared/types";
@@ -2490,7 +2490,7 @@ export function TaskItem({ task }: TaskItemProps) {
 }
 ```
 
-- [ ] **Step 2: Create `src/web/src/components/ProgressBar.tsx`**
+- [x] **Step 2: Create `src/web/src/components/ProgressBar.tsx`**
 
 ```tsx
 export interface ProgressBarProps {
@@ -2508,7 +2508,7 @@ export function ProgressBar({ done, total }: ProgressBarProps) {
 }
 ```
 
-- [ ] **Step 3: Create `src/web/src/components/AgentCard.tsx`**
+- [x] **Step 3: Create `src/web/src/components/AgentCard.tsx`**
 
 ```tsx
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -2601,7 +2601,7 @@ export function AgentCard({ agent, onClear }: AgentCardProps) {
 }
 ```
 
-- [ ] **Step 4: Write `tests/web/AgentCard.test.tsx`**
+- [x] **Step 4: Write `tests/web/AgentCard.test.tsx`**
 
 ```tsx
 import { describe, it, expect, vi } from "vitest";
@@ -2664,12 +2664,12 @@ describe("AgentCard", () => {
 });
 ```
 
-- [ ] **Step 5: Run tests — pass**
+- [x] **Step 5: Run tests — pass**
 
 Run: `pnpm test:web`
 Expected: all AgentCard tests pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/web/src/components tests/web/AgentCard.test.tsx
