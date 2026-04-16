@@ -2196,7 +2196,7 @@ git commit -m "feat(cli): start-background, ensure-running, status, stop"
 - Create: `src/web/src/styles.css`
 - Create: `src/web/src/App.tsx` (stub)
 
-- [ ] **Step 1: Create `src/web/index.html`**
+- [x] **Step 1: Create `src/web/index.html`**
 
 ```html
 <!DOCTYPE html>
@@ -2213,7 +2213,7 @@ git commit -m "feat(cli): start-background, ensure-running, status, stop"
 </html>
 ```
 
-- [ ] **Step 2: Create `src/web/src/styles.css`**
+- [x] **Step 2: Create `src/web/src/styles.css`**
 
 ```css
 @import "tailwindcss";
@@ -2226,7 +2226,7 @@ body {
 }
 ```
 
-- [ ] **Step 3: Create `src/web/src/main.tsx`**
+- [x] **Step 3: Create `src/web/src/main.tsx`**
 
 ```tsx
 import React from "react";
@@ -2241,7 +2241,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-- [ ] **Step 4: Create stub `src/web/src/App.tsx`**
+- [x] **Step 4: Create stub `src/web/src/App.tsx`**
 
 ```tsx
 export default function App() {
@@ -2249,14 +2249,14 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 5: Smoke-test dev server**
+- [x] **Step 5: Smoke-test dev server**
 
 Run: `pnpm dev:web`
 Open: `http://localhost:5173`
 Expected: page shows "Agent Checklist dashboard".
 Stop with Ctrl+C.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/web/index.html src/web/src
