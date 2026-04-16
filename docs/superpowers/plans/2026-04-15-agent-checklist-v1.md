@@ -2874,7 +2874,7 @@ git commit -m "feat(web): Board + ConnectionIndicator + ResetButton wired to use
 **Files:**
 - Modify: `tests/server/mcp.test.ts` (append a live-server integration suite)
 
-- [ ] **Step 1: Append to `tests/server/mcp.test.ts`**
+- [x] **Step 1: Append to `tests/server/mcp.test.ts`**
 
 ```ts
 import { startServer } from "../../src/server/server.ts";
@@ -2926,12 +2926,12 @@ test("integration: register_agent + update_task via MCP over HTTP", async () => 
 });
 ```
 
-- [ ] **Step 2: Run — pass**
+- [x] **Step 2: Run — pass**
 
 Run: `pnpm test:server --test-name-pattern=integration`
 Expected: the integration test passes.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/server/mcp.test.ts
@@ -2945,7 +2945,7 @@ git commit -m "test(server): end-to-end MCP integration (initialize + register +
 **Files:**
 - Create: `scripts/build.sh`
 
-- [ ] **Step 1: Create `scripts/build.sh`**
+- [x] **Step 1: Create `scripts/build.sh`**
 
 ```bash
 #!/usr/bin/env bash
@@ -2959,7 +2959,7 @@ chmod +x dist/server/index.js || true
 echo "build complete: dist/"
 ```
 
-- [ ] **Step 2: Make executable**
+- [x] **Step 2: Make executable**
 
 Run: `chmod +x scripts/build.sh`
 
@@ -2985,7 +2985,7 @@ kill %1
 ```
 Expected: `200` for the dashboard HTML; health returns JSON.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/build.sh
