@@ -1796,7 +1796,7 @@ git commit -m "feat(server): compose Fastify app (static, REST, WS, MCP, persist
 **Files:**
 - Create: `src/server/signals.ts`
 
-- [ ] **Step 1: Create `src/server/signals.ts`**
+- [x] **Step 1: Create `src/server/signals.ts`**
 
 ```ts
 import type { ServerHandle } from "./server.js";
@@ -1827,12 +1827,12 @@ export function installShutdownHandlers(handle: ServerHandle): () => Promise<voi
 }
 ```
 
-- [ ] **Step 2: Compile**
+- [x] **Step 2: Compile**
 
 Run: `pnpm lint:types`
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/server/signals.ts
