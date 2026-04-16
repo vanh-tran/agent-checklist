@@ -1847,7 +1847,7 @@ git commit -m "feat(server): graceful shutdown on SIGTERM/SIGINT with persistenc
 - Create: `src/server/cli.ts`
 - Create: `src/server/index.ts`
 
-- [ ] **Step 1: Create `src/server/cli.ts` (partial — foreground start only; other subcommands added in later tasks)**
+- [x] **Step 1: Create `src/server/cli.ts` (partial — foreground start only; other subcommands added in later tasks)**
 
 ```ts
 import { Command } from "commander";
@@ -1894,7 +1894,7 @@ export async function runCli(argv: readonly string[]): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Create `src/server/index.ts` (bin entry)**
+- [x] **Step 2: Create `src/server/index.ts` (bin entry)**
 
 ```ts
 #!/usr/bin/env node
@@ -1906,7 +1906,7 @@ runCli(process.argv).catch((err) => {
 });
 ```
 
-- [ ] **Step 3: Smoke-test start via tsx**
+- [x] **Step 3: Smoke-test start via tsx**
 
 Run:
 ```bash
@@ -1918,7 +1918,7 @@ kill %1
 ```
 Expected: JSON like `{"service":"agent-checklist","version":"0.1.0","pid":…,"startedAt":…}`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/server/cli.ts src/server/index.ts
