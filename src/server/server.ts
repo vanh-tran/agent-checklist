@@ -69,9 +69,11 @@ export async function startServer(opts: StartOpts): Promise<ServerHandle> {
     });
   });
 
-  // MCP (Streamable HTTP, stateless — one transport per request)
-  const mcp = createMcpServer({ store, broadcaster });
+  // MCP (Streamable HTTP, stateless — one MCP server + transport per request,
+  // because McpServer.connect() can only be called once per instance)
+  const mcpCtx = { store, broadcaster };
   app.all("/mcp", async (req, reply) => {
+    const mcp = createMcpServer(mcpCtx);
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
     reply.hijack();
     await mcp.connect(transport);
