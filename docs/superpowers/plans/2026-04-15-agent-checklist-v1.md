@@ -1933,7 +1933,7 @@ git commit -m "feat(cli): agent-checklist start (foreground)"
 - Modify: `src/server/cli.ts`
 - Create: `tests/server/cli.test.ts`
 
-- [ ] **Step 1: Write failing tests — `tests/server/cli.test.ts`**
+- [x] **Step 1: Write failing tests — `tests/server/cli.test.ts`**
 
 ```ts
 import { test } from "node:test";
@@ -2018,12 +2018,12 @@ test("ensure-running on a live server is a no-op exit 0", async () => {
 });
 ```
 
-- [ ] **Step 2: Run — tests should fail**
+- [x] **Step 2: Run — tests should fail**
 
 Run: `pnpm test:server --test-name-pattern=start-background|ensure-running`
 Expected: FAIL; subcommands not implemented.
 
-- [ ] **Step 3: Extend `src/server/cli.ts`**
+- [x] **Step 3: Extend `src/server/cli.ts`**
 
 Add these imports/helpers at the top of the file:
 
@@ -2174,12 +2174,12 @@ Then register the subcommands inside `buildCli` (add to the existing function):
     });
 ```
 
-- [ ] **Step 4: Run tests — they pass**
+- [x] **Step 4: Run tests — they pass**
 
 Run: `pnpm test:server`
 Expected: all pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/server/cli.ts tests/server/cli.test.ts
