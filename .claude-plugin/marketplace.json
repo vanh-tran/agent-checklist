@@ -9,7 +9,7 @@
     {
       "name": "agent-checklist",
       "description": "Local dashboard + MCP server that shows coding agents' real-time task checklists and progress.",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "source": "./",
       "author": {
         "name": "vanhtran18",

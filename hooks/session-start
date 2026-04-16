@@ -52,16 +52,17 @@ if ! $START_CMD ensure-running 2>>"$ERROR_LOG"; then
   exit 1
 fi
 
-# Self-register the MCP server in ~/.claude/settings.json.
+# Self-register the MCP server in ~/.claude.json (the file Claude Code actually
+# reads for MCP configuration — NOT settings.json).
 #
 # We point to a STABLE launcher script at a fixed path rather than to the
 # version-specific binary. The launcher reads installed_plugins.json at
-# runtime to find the current version, so settings.json never needs updating
-# after a plugin upgrade — the first session after any update just works.
+# runtime to find the current version, so the registration never needs
+# updating after a plugin upgrade.
 #
 # We also write the launcher script itself here, so it stays current even if
 # the user moves their plugins directory.
-CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+CLAUDE_JSON="$HOME/.claude.json"
 LAUNCHER_DIR="$HOME/.claude/plugins/data/agent-checklist"
 LAUNCHER="$LAUNCHER_DIR/mcp-launcher.sh"
 
@@ -90,24 +91,24 @@ exec node "$SERVER_BIN" mcp-stdio
 LAUNCHER_EOF
 chmod +x "$LAUNCHER"
 
-if [ -f "$CLAUDE_SETTINGS" ]; then
+if [ -f "$CLAUDE_JSON" ]; then
   node -e "
     const fs = require('fs');
-    const settingsPath = '$CLAUDE_SETTINGS';
-    const launcher    = '$LAUNCHER';
+    const claudeJsonPath = '$CLAUDE_JSON';
+    const launcher       = '$LAUNCHER';
     try {
-      const s = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+      const s = JSON.parse(fs.readFileSync(claudeJsonPath, 'utf8'));
       s.mcpServers = s.mcpServers || {};
       const existing = s.mcpServers['checklist'];
-      const wantCmd  = { command: '/bin/bash', args: [launcher] };
+      const wantCmd  = { type: 'stdio', command: '/bin/bash', args: [launcher], env: {} };
       // Write only when missing, still url-style, or pointing at a versioned
       // path (migrate users who have the old command-style registration).
       const isVersioned = existing?.args?.[0]?.includes('/cache/agent-checklist/');
       if (!existing || existing.url || isVersioned) {
         s.mcpServers['checklist'] = wantCmd;
-        fs.writeFileSync(settingsPath, JSON.stringify(s, null, 2) + '\n');
+        fs.writeFileSync(claudeJsonPath, JSON.stringify(s, null, 2) + '\n');
       }
-    } catch (e) { /* settings unreadable — skip silently */ }
+    } catch (e) { /* claude.json unreadable — skip silently */ }
   " 2>>"$ERROR_LOG" || true
 fi
 
