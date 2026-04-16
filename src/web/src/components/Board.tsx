@@ -1,3 +1,4 @@
+import React from "react";
 import type { BoardState } from "@shared/types";
 import { AgentCard } from "./AgentCard";
 

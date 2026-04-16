@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { Agent } from "@shared/types";
 import { TaskItem } from "./TaskItem";
 import { ProgressBar } from "./ProgressBar";

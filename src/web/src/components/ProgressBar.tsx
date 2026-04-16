@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface ProgressBarProps {
   done: number;
   total: number;

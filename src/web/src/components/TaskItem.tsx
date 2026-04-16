@@ -1,3 +1,4 @@
+import React from "react";
 import type { Task } from "@shared/types";
 
 const statusIcon: Record<Task["status"], string> = {
