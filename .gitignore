@@ -6,6 +6,7 @@ dist/
 .env
 .env.local
 .superpowers/
+scripts/bump-version.sh
 
 # Internal planning docs
 docs/superpowers/

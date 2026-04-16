@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { readPort } from "../shared/port.js";
 import type { HealthResponse } from "../shared/types.js";
 import { startServer } from "./server.js";
+import { startStdioMcp } from "./mcp-stdio.js";
 import { installShutdownHandlers } from "./signals.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -138,6 +139,42 @@ export function buildCli(): Command {
       }
       console.error(`agent-checklist could not be reached or started on :${port}`);
       process.exit(1);
+    });
+
+  program
+    .command("mcp-stdio")
+    .description(
+      "Start a stdio MCP server — ensures the background HTTP server is running first, then proxies tool calls over stdio. Register this as a `command` MCP in settings.json instead of a `url` to eliminate the session-start timing race.",
+    )
+    .action(async () => {
+      const port = readPort();
+      const myVersion = readVersion();
+      const backoffs = [200, 500, 1000];
+
+      // Ensure the background HTTP+dashboard server is alive (same logic as
+      // ensure-running, but we stay in-process afterward to serve stdio MCP).
+      const existing = await probeHealth(port);
+      if (existing && existing.version !== myVersion) {
+        try { process.kill(existing.pid, "SIGTERM"); } catch { /* already gone */ }
+        await new Promise((r) => setTimeout(r, 500));
+      } else if (!existing) {
+        await spawnDetached();
+      }
+
+      if (!existing || existing.version !== myVersion) {
+        let ready = false;
+        for (let attempt = 0; attempt < backoffs.length; attempt++) {
+          await new Promise((r) => setTimeout(r, backoffs[attempt]!));
+          const h = await probeHealth(port);
+          if (h && h.version === myVersion) { ready = true; break; }
+        }
+        if (!ready) {
+          process.stderr.write(`agent-checklist HTTP server did not become ready on :${port}\n`);
+          process.exit(1);
+        }
+      }
+
+      await startStdioMcp(port, myVersion);
     });
 
   program

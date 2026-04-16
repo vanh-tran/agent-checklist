@@ -73,7 +73,7 @@ export async function startServer(opts: StartOpts): Promise<ServerHandle> {
   // because McpServer.connect() can only be called once per instance)
   const mcpCtx = { store, broadcaster };
   app.all("/mcp", async (req, reply) => {
-    const mcp = createMcpServer(mcpCtx);
+    const mcp = createMcpServer(mcpCtx, opts.version);
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
     reply.hijack();
     await mcp.connect(transport);

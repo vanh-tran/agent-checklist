@@ -52,20 +52,60 @@ if ! $START_CMD ensure-running 2>>"$ERROR_LOG"; then
   exit 1
 fi
 
-# Issue 1: Self-register the MCP server in ~/.claude/settings.json so Claude
-# Code connects to it automatically on the next session restart.
-# This is idempotent — it only writes when the entry is missing.
+# Self-register the MCP server in ~/.claude/settings.json.
+#
+# We point to a STABLE launcher script at a fixed path rather than to the
+# version-specific binary. The launcher reads installed_plugins.json at
+# runtime to find the current version, so settings.json never needs updating
+# after a plugin upgrade — the first session after any update just works.
+#
+# We also write the launcher script itself here, so it stays current even if
+# the user moves their plugins directory.
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+LAUNCHER_DIR="$HOME/.claude/plugins/data/agent-checklist"
+LAUNCHER="$LAUNCHER_DIR/mcp-launcher.sh"
+
+# Write/refresh the launcher script.
+mkdir -p "$LAUNCHER_DIR"
+cat > "$LAUNCHER" << 'LAUNCHER_EOF'
+#!/usr/bin/env bash
+# Stable MCP launcher for agent-checklist.
+# Dynamically resolves the currently-installed plugin version at runtime.
+set -euo pipefail
+INSTALLED_JSON="$HOME/.claude/plugins/installed_plugins.json"
+if [ ! -f "$INSTALLED_JSON" ]; then
+  echo "agent-checklist: installed_plugins.json not found" >&2; exit 1
+fi
+INSTALL_PATH="$(node -e "
+  const d = JSON.parse(require('fs').readFileSync('$INSTALLED_JSON', 'utf8'));
+  const p = d.plugins && d.plugins['agent-checklist@agent-checklist'];
+  if (!p || !p[0]) { process.stderr.write('agent-checklist: not in installed_plugins.json\n'); process.exit(1); }
+  process.stdout.write(p[0].installPath);
+")"
+SERVER_BIN="${INSTALL_PATH}/dist/server/index.js"
+if [ ! -f "$SERVER_BIN" ]; then
+  echo "agent-checklist: binary not found at $SERVER_BIN" >&2; exit 1
+fi
+exec node "$SERVER_BIN" mcp-stdio
+LAUNCHER_EOF
+chmod +x "$LAUNCHER"
+
 if [ -f "$CLAUDE_SETTINGS" ]; then
   node -e "
     const fs = require('fs');
-    const path = '$CLAUDE_SETTINGS';
+    const settingsPath = '$CLAUDE_SETTINGS';
+    const launcher    = '$LAUNCHER';
     try {
-      const s = JSON.parse(fs.readFileSync(path, 'utf8'));
-      if (!s.mcpServers || !s.mcpServers['checklist']) {
-        s.mcpServers = s.mcpServers || {};
-        s.mcpServers['checklist'] = { url: 'http://localhost:51723/mcp' };
-        fs.writeFileSync(path, JSON.stringify(s, null, 2) + '\n');
+      const s = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+      s.mcpServers = s.mcpServers || {};
+      const existing = s.mcpServers['checklist'];
+      const wantCmd  = { command: '/bin/bash', args: [launcher] };
+      // Write only when missing, still url-style, or pointing at a versioned
+      // path (migrate users who have the old command-style registration).
+      const isVersioned = existing?.args?.[0]?.includes('/cache/agent-checklist/');
+      if (!existing || existing.url || isVersioned) {
+        s.mcpServers['checklist'] = wantCmd;
+        fs.writeFileSync(settingsPath, JSON.stringify(s, null, 2) + '\n');
       }
     } catch (e) { /* settings unreadable — skip silently */ }
   " 2>>"$ERROR_LOG" || true
