@@ -2687,7 +2687,7 @@ git commit -m "feat(web): AgentCard, TaskItem, ProgressBar components"
 - Modify: `src/web/src/App.tsx`
 - Create: `tests/web/Board.test.tsx`
 
-- [ ] **Step 1: Create `src/web/src/components/ConnectionIndicator.tsx`**
+- [x] **Step 1: Create `src/web/src/components/ConnectionIndicator.tsx`**
 
 ```tsx
 export interface ConnectionIndicatorProps {
@@ -2704,7 +2704,7 @@ export function ConnectionIndicator({ connected }: ConnectionIndicatorProps) {
 }
 ```
 
-- [ ] **Step 2: Create `src/web/src/components/ResetButton.tsx`**
+- [x] **Step 2: Create `src/web/src/components/ResetButton.tsx`**
 
 ```tsx
 import { useState } from "react";
@@ -2735,7 +2735,7 @@ export function ResetButton() {
 }
 ```
 
-- [ ] **Step 3: Create `src/web/src/components/Board.tsx`**
+- [x] **Step 3: Create `src/web/src/components/Board.tsx`**
 
 ```tsx
 import type { BoardState } from "@shared/types";
@@ -2774,7 +2774,7 @@ export function Board({ state }: BoardProps) {
 }
 ```
 
-- [ ] **Step 4: Replace `src/web/src/App.tsx`**
+- [x] **Step 4: Replace `src/web/src/App.tsx`**
 
 ```tsx
 import { useBoard } from "./hooks/useBoard";
@@ -2802,7 +2802,7 @@ export default function App() {
 }
 ```
 
-- [ ] **Step 5: Write `tests/web/Board.test.tsx`**
+- [x] **Step 5: Write `tests/web/Board.test.tsx`**
 
 ```tsx
 import { describe, it, expect } from "vitest";
@@ -2838,12 +2838,12 @@ describe("Board", () => {
 });
 ```
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 Run: `pnpm test:web`
 Expected: all tests pass.
 
-- [ ] **Step 7: Smoke-test the combined dev environment**
+- [x] **Step 7: Smoke-test the combined dev environment**
 
 Open two terminals:
 
@@ -2860,7 +2860,7 @@ Expected: card appears in the browser immediately.
 
 Stop both processes.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/web/src/components src/web/src/App.tsx tests/web/Board.test.tsx
